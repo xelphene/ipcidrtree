@@ -1,0 +1,6 @@
+test/
+*.pyc
+MANIFEST
+build/
+dist/
+iptree.html
