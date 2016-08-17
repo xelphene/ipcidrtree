@@ -39,65 +39,10 @@ TODO:
 * write examples, doctest em.
 * document any remaining methods
 
-
-ChangeLog:
-
-2010-12-16
-	- added Range object and support
-
-2010-11-30
-	- various cleanups in the parsers
-	- docstrings added
-	- added isValid* functions
-
-2010-10-15
-	- added parseRange and related functions
-
-2009-03-11
-	- Netmask now has a by_netsize constructor
-
-2008-07-08
-	- Prefix can now be compared to None
-	- release 0.5.2
-
-2008-07-01
-	- Feature: a PPrefixNode class in which links to parents are kept at the
-	cost of a circular reference.
-	- fixed __cmp__ on PrefixNode returning False when compared to None
-
-2007-03-15
-	- Speed improvement: Parser now caches results (Prefix constructor 2X
-	  faster now)
-	- Speed improvement: hash function for Prefix is now way faster in
-	  the common /32 case. Needs work for the rest.
-	- release 0.4.0
-
-2006-04-10
-	- Added find_loose method of PrefixNode
-	- release 0.3.0
-
-2006-02-11
-	- change license to new-style BSD, update docs.
-	- release 0.2.0
-
-2006-01-12
-	- speed improvements for PrefixNode.add()
-	- release 0.1.2
-
-2005-12-31
-	- doc updates for dfi and dfi_part.
-
-2005-12-29
-	- fixed bug in subnet() where it would never return self... this 
-	  manifested in addrs() on a /32 returning nothing.
-	- release 0.1.1
-
-2005-12-19
-	- initial release, 0.1.0
 """
 
 __copyright__ = """
-Copyright (c) 2010, Steve Benson
+Copyright (c) 2016, Steve Benson
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
