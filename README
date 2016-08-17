@@ -2,7 +2,7 @@ Overview
 --------
 iptree is a python module which provides classes for representing IPv4
 addresses and netmasks, particularly in tree structures organized by CIDR
-hierarchy.
+hierarchy. For more information, see the pydoc documentation.
 
 Installation
 ------------
