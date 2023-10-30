@@ -1,36 +1,34 @@
 """
-iptree - A module which provides classes for representing IPv4
+ipcidrtree - A module which provides classes for representing IPv4
 addresses and netmasks, particularly in tree structures organized by CIDR
 hierarchy.
 
-http://www.rhythm.cx/~steve/devel/iptree
-
 EXAMPLES:
 
-	>>> import iptree
-	>>> iptree.isValidAddress('1.2.3.4')
+	>>> import ipcidrtree
+	>>> ipcidrtree.isValidAddress('1.2.3.4')
 	True
-	>>> iptree.isValidAddress('1.2')
+	>>> ipcidrtree.isValidAddress('1.2')
 	False
-	>>> iptree.isValidRange('10.0.0.1-9')
+	>>> ipcidrtree.isValidRange('10.0.0.1-9')
 	True
-	>>> iptree.isValidRange('10.0.0.1-asdf')
+	>>> ipcidrtree.isValidRange('10.0.0.1-asdf')
 	False
-	>>> iptree.isValidNetwork('10.0.0.0/24')
+	>>> ipcidrtree.isValidNetwork('10.0.0.0/24')
 	True
-	>>> iptree.isValidNetwork('10.0.0.1/24')
+	>>> ipcidrtree.isValidNetwork('10.0.0.1/24')
 	False
-	>>> iptree.isValidNetwork('10.0.0.1/99')
+	>>> ipcidrtree.isValidNetwork('10.0.0.1/99')
 	False
-	>>> iptree.isValidNetwork('10.0.0.0/255.255.255.0')
+	>>> ipcidrtree.isValidNetwork('10.0.0.0/255.255.255.0')
 	True
-	>>> iptree.isValidSomething('10.0.0.0/255.255.255.0')
+	>>> ipcidrtree.isValidSomething('10.0.0.0/255.255.255.0')
 	True
-	>>> iptree.isValidSomething('10.0.0.0/24')
+	>>> ipcidrtree.isValidSomething('10.0.0.0/24')
 	True
-	>>> iptree.isValidSomething('10.0.0.0-10.0.0.9')
+	>>> ipcidrtree.isValidSomething('10.0.0.0-10.0.0.9')
 	True
-	>>> iptree.isValidSomething('10.0.0.3')
+	>>> ipcidrtree.isValidSomething('10.0.0.3')
 	True
 
                                                        
@@ -554,7 +552,7 @@ class Prefix:
 			return hash(str(self))
 
 	def __contains__(self,other):
-		from iptree.iprange import Range
+		from ipcidrtree.iprange import Range
 		if issubclass(other.__class__, Range):
 			return (
 				other.first() >= self.network().address() and
@@ -982,7 +980,7 @@ def isValidRange(s):
 	'''is the given string a valid range (i.e. 10.0.0.1-9 or
 	10.0.0.1-10.9.9.9)'''
 
-	from iptree.iprange import probableRange
+	from ipcidrtree.iprange import probableRange
 	return probableRange(s)		
 
 def isValidAddress(s):
@@ -1018,7 +1016,7 @@ def isValidSomething(s):
 	)
 
 def parse(s):
-	from iptree.iprange import Range
+	from ipcidrtree.iprange import Range
 	if isValidRange(s):
 		return Range(s)
 	elif isValidNetwork(s):
@@ -1029,6 +1027,6 @@ def parse(s):
 		raise ValueError(s)
 
 def probableRange(s):
-	import iptree.iprange
-	return iptree.iprange.probableRange(s)
+	import ipcidrtree.iprange
+	return ipcidrtree.iprange.probableRange(s)
 	

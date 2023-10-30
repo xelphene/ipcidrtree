@@ -1,7 +1,7 @@
 
 import re
 
-from iptree import Address, Prefix
+from ipcidrtree import Address, Prefix
 
 class Range:
 	def __init__(self, a, b=None):

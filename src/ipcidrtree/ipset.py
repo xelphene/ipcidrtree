@@ -1,6 +1,6 @@
 
-from iptree import Address, Prefix
-from iptree.iprange import Range
+from ipcidrtree import Address, Prefix
+from ipcidrtree.iprange import Range
 
 class IPSet:
 	def __init__(self):
