@@ -259,7 +259,8 @@ class IPNumber:
 		elif type(val)==int or type(val)==int:
 			self._set_int(val)
 		
-		elif type(val)==types.InstanceType and issubclass(val.__class__,IPNumber):
+		#elif type(val)==types.InstanceType and issubclass(val.__class__,IPNumber):
+		elif isinstance(val, IPNumber):
 			self._ip_int=val._ip_int
 
 		else:
@@ -474,10 +475,13 @@ class Prefix:
 		if other==None:
 			return False
 			
-		if not type(other)==types.InstanceType:
-			raise TypeError('Prefix.__eq__ requires Prefix or Address object, given value of type "%s" instead' % type(other))
+		#if not type(other)==types.InstanceType:
+		#if not isinstance(other):
+		#	raise TypeError('Prefix.__eq__ requires Prefix or Address object, given value of type "%s" instead' % type(other))
 
-		if not (issubclass(other.__class__,Prefix) or issubclass(other.__class__,Address)):
+		#if not (issubclass(other.__class__,Prefix) or issubclass(other.__class__,Address)):
+		#	raise TypeError('Prefix.__eq__ requires Prefix or Address object, given object of class "%s" instead' % other.__class__.__name__)
+		if not isinstance(other, (Prefix,Address)):
 			raise TypeError('Prefix.__eq__ requires Prefix or Address object, given object of class "%s" instead' % other.__class__.__name__)
 		
 		if issubclass(other.__class__,Prefix):
