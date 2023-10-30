@@ -130,7 +130,7 @@ def parseStrQuads(s):
 
 	try:
 		return parseIntQuads(*parts)
-	except ValueError, ve:
+	except ValueError as ve:
 		raise ValueError('invalid IP address %s: %s' % (repr(s), str(ve)))
 
 
@@ -163,15 +163,15 @@ class Parser:
 			self._parse_o_cache = {}
 		
 		def flush_cache(self):
-			if len(self._parse_o_cache.keys()) > Parser.CACHE_MAX_LEN:
-				while len(self._parse_o_cache.keys()) > Parser.CACHE_MAX_LEN:
-					del self._parse_o_cache[self._parse_o_cache.keys()[0]]
+			if len(list(self._parse_o_cache.keys())) > Parser.CACHE_MAX_LEN:
+				while len(list(self._parse_o_cache.keys())) > Parser.CACHE_MAX_LEN:
+					del self._parse_o_cache[list(self._parse_o_cache.keys())[0]]
 		
 		def parse_o(self,s):
 			"""Parse a string in and return a tuple of (Address,Netmask)
 			objects. The Netmask item may be None if the string doesn't seem
 			to contain a netmask."""
-			if self._parse_o_cache.has_key(s):
+			if s in self._parse_o_cache:
 				return self._parse_o_cache[s]
 			
 			self.flush_cache()
@@ -249,14 +249,14 @@ class IPNumber:
 		integer via the Parser class), an integer (such that 0 <= i
 		< 2**32), or another Address or subclass.""" 
 
-		if type(val)==types.StringType:
+		if type(val)==bytes:
 			(addr,mask) = Parser().parse_i(val)
 			if mask is not None:
 				raise ValueError('string argument "%s" to IPNumber constructor contains a netmask.' % val)
 			#self._set_int(p.parse(val))
 			self._set_int(addr)
 
-		elif type(val)==types.IntType or type(val)==types.LongType:
+		elif type(val)==int or type(val)==int:
 			self._set_int(val)
 		
 		elif type(val)==types.InstanceType and issubclass(val.__class__,IPNumber):
@@ -270,7 +270,7 @@ class IPNumber:
 		"""Set this Address object's value to a given binary integer address
 		value."""
 
-		if type(ipnum) not in [types.IntType, types.LongType]:
+		if type(ipnum) not in [int, int]:
 			raise TypeError('Invalid type for integer IPv4 number')
 		if not (ipnum>=0 and ipnum<=2**32-1):
 			raise ValueError('Invalid integer IPv4 number: %d (out of range)' % ipnum)
@@ -295,7 +295,7 @@ class IPNumber:
 	def __eq__(self,other):
 		try:
 			return self._ip_int == IPNumber(other)._ip_int
-		except ValueError, ve:
+		except ValueError as ve:
 			return False
 
 	def __add__(self,i):
@@ -305,7 +305,7 @@ class IPNumber:
 		10.0.0.2.  10.0.0.255+1 = 10.0.1.0."""
 		
 		# convert other to an int if needed
-		if type(i) not in [types.IntType, types.LongType]:
+		if type(i) not in [int, int]:
 			raise TypeError("Cannot add type '%s' to IPNumber" % type(i))
 			
 		# check range
@@ -318,7 +318,7 @@ class IPNumber:
 		"""Just the inverse of __add__."""
 	
 		# convert other to an int address if needed
-		if type(other)==types.IntType:
+		if type(other)==int:
 			oi=other
 		else:
 			oi = IPNumber(other)._ip_int
@@ -358,12 +358,12 @@ class Netmask(IPNumber):
 		if val.__class__ == self.__class__:
 			IPNumber.__init__(self,val)
 		else:
-			if (type(val)==types.IntType or type(val)==types.LongType) and 0<=val<=32:
+			if (type(val)==int or type(val)==int) and 0<=val<=32:
 				val=plen2int(val)
 			IPNumber.__init__(self,val)
 
 	def _set_int(self,mask_i):
-		if type(mask_i) not in [types.IntType, types.LongType]:
+		if type(mask_i) not in [int, int]:
 			raise TypeError('Invalid type for integer netmask')
 		if mask_i not in Netmask._valid_masks:
 			raise ValueError('Integer %d is not a valid netmask' % mask_i)
@@ -511,6 +511,23 @@ class Prefix:
 				return 1
 			else:
 				return 0
+
+	def __lt__(self,other):
+		"""Usually used to sort Prefixes. When used for sorting, this will cause
+		Prefixes to be sorted by numeric order of their Addresses. Prefixes
+		that contain one another will first be sorted by most specific-ness
+		(ie, longest mask len) first and the Address numeric value second. If
+		each Prefix has an equal mask len, then sort by Address's sort
+		methods."""
+		if self in other or other in self:
+			if self.netmask.prefix_len() == other.netmask.prefix_len():
+				return self.addr < other.addr
+			elif self.netmask.prefix_len() > other.netmask.prefix_len():
+				return True
+			else:
+				return False
+		else:
+			return self.addr < other.addr
 			
 	
 	def __str__(self):
@@ -568,12 +585,12 @@ class Prefix:
 
 	def _int_slice(self,start,stop,step):
 		rv=[]
-	 	if start is None:
-	 		start=0
+		if start is None:
+			start=0
 		
 		if stop is None:
 			stop=len(self)
-		elif stop==sys.maxint:
+		elif stop==sys.maxsize:
 			stop=len(self)
 		
 		if step is None:
@@ -590,12 +607,12 @@ class Prefix:
 		try:
 			start=Address(start)
 			stop=Address(stop)
-		except ValueError,ve:
+		except ValueError as ve:
 			raise TypeError('Prefix slice indicies must be integers or a type convertible to Address')
 		
 		if step is None:
 			step=1
-		elif type(step) is not types.IntType:
+		elif type(step) is not int:
 			raise TypeError('slice step must be an integer or None')
 
 		rv=[]
@@ -606,7 +623,7 @@ class Prefix:
 	def __getitem__(self,key): # implements prefix[i] and prefix[i:j]
 
 		# handle plain old integer indexes
-		if type(key)==types.IntType:
+		if type(key)==int:
 			if not self._index_ok(key):
 				raise IndexError('Prefix index out of range')
 			if key<0:
@@ -615,12 +632,12 @@ class Prefix:
 				return Prefix(int(self.addr)+key)
 		
 		# handle slices
-		if type(key)==types.SliceType:
+		if type(key)==slice:
 
 			# if this is an ordinary integer slice...
-			if (    (type(key.start)==types.IntType or key.start is None)
-			    and (type(key.stop) ==types.IntType or key.stop  is None)
-			    and (type(key.step) ==types.IntType or key.step  is None)):
+			if (    (type(key.start)==int or key.start is None)
+			    and (type(key.stop) ==int or key.stop  is None)
+			    and (type(key.step) ==int or key.step  is None)):
 			 
 				return self._int_slice(key.start,key.stop,key.step)			 
 
@@ -637,7 +654,7 @@ class Prefix:
 		"""Add the integer i to the network portion of this prefix. Example:
 		Prefix('10.0.0.0/24')+1 == Prefix('10.0.1.0/24')."""
 	
-		if type(i)!=types.IntType:
+		if type(i)!=int:
 			raise TypeError('Cannot add Prefix and %s objects' % str(type(i)))
 		shifted_i = i * self.netmask.netsize() #2**(32-self.prefix_len)
 
@@ -656,7 +673,7 @@ class Prefix:
 		"""Subtract the integer i from the network portion of this prefix.
 		Example: Prefix('10.0.0.0/24')-1 == Prefix('9.255.255.0/24')."""
 	
-		if type(i)!=types.IntType:
+		if type(i)!=int:
 			raise TypeError('Cannot subtract Prefix and %s objects' % str(type(i)))
 		return self+(-i)
 		
@@ -697,7 +714,7 @@ class PrefixNode(object):
 			self.prefix=prefix
 		elif type(prefix)==types.InstanceType and issubclass(prefix.__class__,Address):
 			self.prefix = Prefix(prefix)
-		elif type(prefix)==types.StringType:
+		elif type(prefix)==bytes:
 			self.prefix=Prefix(prefix)
 		else:
 			raise TypeError('PrefixNode constructor requires Prefix or string argument - got a %s' % type(prefix))
@@ -737,7 +754,7 @@ class PrefixNode(object):
 		branch._rrenumber(new_prefix)
 		try:
 			self.add(branch)
-		except DuplicatePrefixError, dpe:
+		except DuplicatePrefixError as dpe:
 			branch._rrenumber(old_prefix)
 			self.add(branch)
 			raise DuplicatePrefixError(dpe.prefix)
@@ -814,7 +831,7 @@ class PrefixNode(object):
 	def parenting(self,new_child):
 		"""Return true/false if we are parenting a PrefixNode with an equivalent
 		Prefix to new_child."""
-		if self._children_hash.has_key(new_child.prefix):
+		if new_child.prefix in self._children_hash:
 			return True
 		return False
 		
@@ -930,7 +947,7 @@ class PrefixNode(object):
 		"""Used for debugging. Prints out the tree an human-friendly way."""
 		for (node,depth) in self.dfi():
 			#print '    '*depth,node.prefix
-			print '    '*depth,str(node)
+			print('    '*depth,str(node))
 
 class PPrefixNode(PrefixNode): 
 
