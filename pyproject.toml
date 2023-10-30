@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "iptree"
+version = "1.3.0"
+authors = [
+  { name="Steve Benson", email="steve@xelphene.net" },
+]
+description = "Represent IPv4 information in tree structures"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/xelphene/iptree"
+"Bug Tracker" = "https://github.com/xelphene/iptree/issues"

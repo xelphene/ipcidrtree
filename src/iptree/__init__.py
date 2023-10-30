@@ -77,9 +77,9 @@ import types
 import sys
 import math
 
-__version__='1.2.2'
+__version__='1.3.0'
 __author__='Steve Benson'
-__date__='2011-jun-29'
+__date__='2023-oct-30'
 
 def plen2int(plen):
 	"""Takes an integer in 0..32 (a subnet mask expressed in "slash"
