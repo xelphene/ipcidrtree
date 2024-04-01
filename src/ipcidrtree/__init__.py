@@ -247,14 +247,14 @@ class IPNumber:
 		integer via the Parser class), an integer (such that 0 <= i
 		< 2**32), or another Address or subclass.""" 
 
-		if type(val)==bytes:
+		if type(val)==bytes or type(val)==str:
 			(addr,mask) = Parser().parse_i(val)
 			if mask is not None:
 				raise ValueError('string argument "%s" to IPNumber constructor contains a netmask.' % val)
 			#self._set_int(p.parse(val))
 			self._set_int(addr)
 
-		elif type(val)==int or type(val)==int:
+		elif type(val)==int:
 			self._set_int(val)
 		
 		#elif type(val)==types.InstanceType and issubclass(val.__class__,IPNumber):
